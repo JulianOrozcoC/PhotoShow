@@ -16,20 +16,21 @@ class AlbumsController extends Controller
         return view('albums.create');
 		}
 		
-		private function generateFile($request){
-				// Get file name with extension
-				$fileNameWithExt = $request->file('cover_image')->getClientOriginalName();
-				// Get just file name
-				$fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-				// Get extension of the file
-				$extension = $request->file('cover_image')->getClientOriginalExtension();
-				// Create new fileName
-				$fileNameToStore = $fileName.'_'.time().'.'.$extension;
-				// Upload Image
-				$path = $request->file('cover_image')->storeAs('public/album_covers', $fileNameToStore);
+		
+	private function generateFile($request){
+			// Get file name with extension
+			$fileNameWithExt = $request->file('cover_image')->getClientOriginalName();
+			// Get just file name
+			$fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+			// Get extension of the file
+			$extension = $request->file('cover_image')->getClientOriginalExtension();
+			// Create new fileName
+			$fileNameToStore = $fileName.'_'.time().'.'.$extension;
+			// Upload Image
+			$path = $request->file('cover_image')->storeAs('public/album_covers', $fileNameToStore);
 
-				return $fileNameToStore;
-		}
+			return $fileNameToStore;
+	}
 
     public function store(Request $request){
         $this->validate($request, [
@@ -45,5 +46,10 @@ class AlbumsController extends Controller
 				$album->save();
 
 				return redirect('/albums')->with('success', 'Album Created');
-    }
+	}
+	
+	public function show($id){
+		$album = Albums::with('Photos')->find($id);
+		return view('albums.show')->with('album',$album);
+	}
 }
