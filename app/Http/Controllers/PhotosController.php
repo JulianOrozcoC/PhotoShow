@@ -3,12 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Photos;
 
 class PhotosController extends Controller
 {
     public function create($album_id){
       return view('photos.create')->with('album_id', $album_id);
+    }
+
+    public function show($id){
+      $photo = Photos::find($id);
+      return view('photos.show')->with('photo', $photo);
+    }
+
+    public function destroy($id){
+      $photo = Photos::find($id);
+
+      if (Storage::delete('public/photos/'.$photo->albums_id.'/'.$photo->photo)) {
+        $photo->delete();
+
+        return redirect('/')->with('success', 'Photo Deleted');
+      }
     }
 
     public function store(Request $request){
